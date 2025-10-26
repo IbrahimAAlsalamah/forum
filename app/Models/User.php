@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -64,6 +66,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -80,5 +83,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole(): boolean
+    {
+        return $this->roles()->contains('name', 'admin');
     }
 }

@@ -2,4 +2,5 @@
 
 return [
     'posts' => 'Posts',
+    'create' => 'Create',
 ];

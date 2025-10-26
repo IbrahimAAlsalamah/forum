@@ -27,14 +27,20 @@ class PostController extends Controller
                 fn (Builder $query) => $query->whereAny(['title', 'body'], 'like', '%'.$request->query('query').'%'))
             ->latest()
             ->latest('id')
-            ->paginate()
+            ->paginate(10)
             ->withQueryString();
+
+        $words = [
+            'all' => __('All Posts'),
+            'search' => __('Search'),
+        ];
 
         return inertia('Posts/Index', [
             'posts' => PostResource::collection($posts),
             'topics' => fn () => TopicResource::collection(Topic::all()),
             'selectedTopic' => fn () => $topic ? TopicResource::make($topic) : null,
             'query' => $request->query('query'),
+            'words' => $words,
         ]);
     }
 
@@ -45,6 +51,11 @@ class PostController extends Controller
     {
         return inertia('Posts/Create', [
             'topics' => fn () => TopicResource::collection(Topic::all()),
+            'words' => [
+                'create' => __('Create Post'),
+                'topic' => __('Select a Topic'),
+                'title' => __('title'),
+            ],
         ]);
     }
 
@@ -74,6 +85,13 @@ class PostController extends Controller
             return redirect($post->showRoute($request->query()), status: 301);
         }
 
+        $t = [
+            'edit' => __('Edit'),
+            'comments' => __('Comments'),
+            'addComment' => __('Add Comment'),
+            'likes' => __('Likes'),
+        ];
+
         $post->load('user', 'topic');
 
         return inertia('Posts/Show', [
@@ -85,6 +103,7 @@ class PostController extends Controller
 
                 return $commentResource;
             },
+            'words' => $t,
         ]);
     }
 
@@ -109,6 +128,8 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+
+        return to_route('posts.index');
     }
 }

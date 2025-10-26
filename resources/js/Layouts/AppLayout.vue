@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import Banner from "@/Components/Banner.vue";
@@ -12,6 +12,10 @@ import ConfirmationModalWrapper from "@/Components/ConfirmationModalWrapper.vue"
 defineProps({
     title: String,
 });
+
+const page = usePage();
+
+const locale = computed(() => usePage().props.locale);
 
 const showingNavigationDropdown = ref(false);
 
@@ -33,27 +37,33 @@ const logout = () => {
 
 const menu = [
     {
-        name: "Dashboard",
-        url: route("dashboard"),
-        route: "dashboard",
-        when: () => usePage().props.auth.user,
+        name: page.props.t.home,
+        url: route("profileprofile.index"),
+        route: "profileprofile.index",
+        when: () => page.props.auth.user,
     },
     {
-        name: "Posts",
+        name: page.props.t.posts,
         url: route("posts.index"),
         route: "posts.index",
     },
     {
-        name: "Create a Post",
+        name: page.props.t.create_post,
         url: route("posts.create"),
         route: "posts.create",
-        when: () => usePage().props.permissions.create_posts,
+        when: () => page.props.permissions.create_posts,
+    },
+    {
+        name: page.props.t.create_topic,
+        url: route("topics.create"),
+        route: "topics.create",
+        when: () => page.props.auth.user.is_admin,
     },
 ];
 </script>
 
 <template>
-    <div>
+    <div :dir="locale === 'ar' ? 'rtl' : 'ltr'">
         <Head :title="title" />
 
         <Banner />
@@ -73,7 +83,7 @@ const menu = [
 
                             <!-- Navigation Links -->
                             <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
+                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex rtl:space-x-reverse"
                             >
                                 <template v-for="item in menu" :key="item.name">
                                     <NavLink
@@ -147,13 +157,26 @@ const menu = [
                                         <div
                                             class="block px-4 py-2 text-xs text-gray-400"
                                         >
-                                            Manage Account
+                                            {{ $page.props.t.manage_account }}
                                         </div>
 
                                         <DropdownLink
                                             :href="route('profile.show')"
                                         >
-                                            Profile
+                                            {{ $page.props.t.profile }}
+                                        </DropdownLink>
+
+                                        <DropdownLink
+                                            v-if="$page.props.t.locale === 'en'"
+                                            :href="route('lang', 'ar')"
+                                        >
+                                            العربيه
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            v-else
+                                            :href="route('lang', 'en')"
+                                        >
+                                            English
                                         </DropdownLink>
 
                                         <DropdownLink
@@ -171,7 +194,7 @@ const menu = [
                                         <!-- Authentication -->
                                         <form @submit.prevent="logout">
                                             <DropdownLink as="button">
-                                                Log Out
+                                                {{ $page.props.t.logout }}
                                             </DropdownLink>
                                         </form>
                                     </template>
@@ -179,7 +202,7 @@ const menu = [
                             </div>
 
                             <div v-else>
-                                <Link :href="route('login')"> Login </Link>
+                                <Link :href="route('login')"> Login</Link>
                             </div>
                         </div>
 

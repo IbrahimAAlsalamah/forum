@@ -1,49 +1,81 @@
 <script setup>
-import {relativeDate} from "@/Utilities/date.js";
-import {Link, router, usePage} from "@inertiajs/vue3";
-import {computed} from "vue";
-import {HandThumbDownIcon, HandThumbUpIcon} from "@heroicons/vue/20/solid/index.js";
+import { relativeDate } from "@/Utilities/date.js";
+import { Link, router, usePage } from "@inertiajs/vue3";
+import { computed } from "vue";
+import {
+    HandThumbDownIcon,
+    HandThumbUpIcon,
+} from "@heroicons/vue/20/solid/index.js";
 
-const props = defineProps(['comment'])
+const props = defineProps(["comment", "words"]);
+const emit = defineEmits(["edit", "delete"]);
 
-const emit = defineEmits(['edit', 'delete']);
-
+const words = usePage().props.t;
 </script>
 
 <template>
-    <div class="sm:flex items-center">
-        <div class="mb-4 flex-shrink-0 sm:mb-0 sm:mr-4">
-            <img :src="comment.user.profile_photo_url" class="h-10 w-10 rounded-full" />
+    <div class="sm:flex items-center space-x-4 rtl:space-x-reverse">
+        <div class="mb-4 flex-shrink-0 sm:mb-0">
+            <img
+                :src="comment.user.profile_photo_url"
+                class="h-10 w-10 rounded-full"
+            />
         </div>
         <div>
-            <div class="text-indigo-800 font-semibold">{{ comment.user.name }}</div>
+            <div class="text-indigo-800 font-semibold">
+                {{ comment.user.name }}
+            </div>
         </div>
     </div>
     <div>
         <div class="pl-14 break-all">{{ comment.body }}</div>
         <div class="flex justify-between mt-2">
-            <div class="mt-1 space-x-3 pl-14 flex items-center">
-
-                <span class="text-pink-600 font-bold text-sm">{{ comment.likes_count }} likes</span>
-                <div v-if="$page.props.auth.user" class="flex items-center ">
-                    <Link v-if="comment.can.like" preserve-scroll :href="route('likes.store', ['comment', comment.id])" method="post">
+            <div
+                class="mt-1 space-x-3 pl-14 flex items-center rtl:space-x-reverse"
+            >
+                <span class="text-pink-600 font-bold text-sm"
+                    >{{ comment.likes_count }} {{ words.likes }}</span
+                >
+                <div v-if="$page.props.auth.user" class="flex items-center">
+                    <Link
+                        v-if="comment.can.like"
+                        preserve-scroll
+                        :href="route('likes.store', ['comment', comment.id])"
+                        method="post"
+                    >
                         <HandThumbUpIcon class="size-4 text-pink-600" />
                     </Link>
-                    <Link v-else preserve-scroll :href="route('likes.destroy', ['comment', comment.id])" method="delete">
+                    <Link
+                        v-else
+                        preserve-scroll
+                        :href="route('likes.destroy', ['comment', comment.id])"
+                        method="delete"
+                    >
                         <HandThumbDownIcon class="size-4 text-pink-600" />
                     </Link>
                 </div>
-                <span class="text-[12px] text-gray-500 font-light">{{ relativeDate(comment.created_at) }} ago</span>
+                <span class="text-[12px] text-gray-500 font-light"
+                    >{{ relativeDate(comment.created_at) }} ago</span
+                >
             </div>
-            <div class="flex space-x-4">
-                <form v-if="comment.can?.delete" @submit.prevent="emit('delete', comment.id)">
-                    <button class="text-red-600 text-sm">Delete</button>
+            <div class="flex space-x-4 rtl:space-x-reverse">
+                <form
+                    v-if="comment.can?.delete"
+                    @submit.prevent="emit('delete', comment.id)"
+                >
+                    <button class="text-red-600 text-sm">
+                        {{ words.delete }}
+                    </button>
                 </form>
-                <form v-if="comment.can?.update" @submit.prevent="emit('edit', comment.id)">
-                    <button class="text-indigo-900 text-sm">Edit</button>
+                <form
+                    v-if="comment.can?.update"
+                    @submit.prevent="emit('edit', comment.id)"
+                >
+                    <button class="text-indigo-900 text-sm">
+                        {{ words.edit }}
+                    </button>
                 </form>
             </div>
         </div>
     </div>
-
 </template>

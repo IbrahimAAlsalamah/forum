@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Post;
+use App\Models\Role;
 use App\Models\Topic;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -17,6 +18,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+        $admin = Role::create([
+            'name' => 'admin',
+        ]);
+
         $this->call(TopicSeeder::class);
         $topics = Topic::all();
 
@@ -37,6 +43,14 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Ibra',
                 'email' => 'Ibra@example.com',
                 'password' => '12345678',
-            ]);
+                'is_admin' => true,
+            ])->roles()->attach($admin);
+
+        User::factory()->create([
+            'name' => 'James Harry',
+            'email' => 'user@example.com',
+            'password' => '12345678',
+            'is_admin' => false,
+        ]);
     }
 }

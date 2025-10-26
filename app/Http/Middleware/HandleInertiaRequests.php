@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -40,6 +41,20 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'permissions' => [
                 'create_posts' => $request->user()?->can('create', Post::class),
+            ],
+            'locale' => App::getLocale(),
+            't' => fn () => [
+                'locale' => App::getLocale(),
+                'create_post' => __('Create Post'),
+                'posts' => __('Posts'),
+                'home' => __('Home'),
+                'profile' => __('Profile'),
+                'logout' => __('Logout'),
+                'manage_account' => __('Manage Account'),
+                'create_topic' => __('Create Topic'),
+                'delete' => __('Delete'),
+                'edit' => __('Edit'),
+                'likes' => __('Likes'),
             ],
         ];
     }
