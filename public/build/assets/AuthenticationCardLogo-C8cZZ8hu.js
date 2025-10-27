@@ -1,0 +1,1 @@
+import{c as t,w as e,a as o,f as r,l as s,o as n}from"./app-D_Z8LI_J.js";const _={__name:"AuthenticationCardLogo",setup(l){return(u,a)=>(n(),t(r(s),{href:"/"},{default:e(()=>[...a[0]||(a[0]=[o("img",{src:"/assets/forum-logo-64.png",alt:"forum"},null,-1)])]),_:1}))}};export{_};
